@@ -107,7 +107,7 @@ void NeuralNetwork::Generador_coneciones(void)
             if(Noexistia)
             {
                 Con[coni][0]=iran;Con[coni][1]=jran;
-                coni++
+                coni++;
             }
         }   
     }
