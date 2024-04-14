@@ -1,0 +1,18 @@
+https://medlineplus.gov/spanish/ency/article/003931.htm
+
+
+Datos:
+Aquí, pPNumero es un puntero doble que almacena la dirección de pNumero.
+ Para acceder al valor almacenado en la dirección a la que apunta pNumero a través de pPNumero,
+  se utiliza el operador de desreferencia (*) dos veces, como en **pPNumero.
+
+Los punteros dobles son útiles en situaciones donde necesitas modificar la dirección 
+de memoria a la que apunta un puntero dentro de una función, ya que pasar un puntero 
+por referencia a una función solo te permite modificar el valor almacenado en la dirección 
+a la que apunta el puntero, no la dirección en sí. Un puntero doble permite modificar 
+la dirección de memoria a la que apunta el puntero original 
+
+
+  ~ Este operador invierte todos los bits de su operando. Es decir, 
+ cambia cada 1 por un 0 y cada 0 por un 1. Este operador se aplica a los tipos
+  de datos char y int, y es uno de los operadores de bits en C++ 
