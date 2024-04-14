@@ -18,7 +18,11 @@ const double alpha= 0.1; // hyperpolarization coefficient
 
 const double factor_cell_hini=0.5;// idea de TDAH
 
+<<<<<<< HEAD
 NeuralNetwork neurona();
+=======
+NeuralNetwork neurona(N2,C);
+>>>>>>> 0a8f7e7093af1ad9c6c3ed83b4e9a7ae85d18554
 
 
 
