@@ -3,13 +3,21 @@
 #include "Random64.h"
 class NeuralNetwork{
     private:
+<<<<<<< HEAD
+=======
+    int N2,C;
+>>>>>>> 0a8f7e7093af1ad9c6c3ed83b4e9a7ae85d18554
     int *AP, *APNew;// Powwr vector
     int **Connection_per_neuron; // Matriz de connecciones 
     std::vector <bool> IE;// tipo de neurona 
     std::vector<std::vector<int>> Con; 
     std::vector <int> connection_count;
     public:
+<<<<<<< HEAD
     NeuralNetwork(int N2,int C);
+=======
+    NeuralNetwork(int n2,int c);
+>>>>>>> 0a8f7e7093af1ad9c6c3ed83b4e9a7ae85d18554
     ~NeuralNetwork(void);
     void Estado_inicial(Crandom &ran64); /* genera la matriz que asigna 
     los phi(potencial) estados y tipo de neurona inhibidora o excitadora */
