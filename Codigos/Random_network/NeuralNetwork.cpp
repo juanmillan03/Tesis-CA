@@ -1,11 +1,7 @@
 #include "NeuralNetwork.hpp"
 
-<<<<<<< HEAD
-NeuralNetwork::NeuralNetwork(int N2,int C){
-=======
-NeuralNetwork::NeuralNetwork(int n2,int c){
-    C=c;N2=n2;
->>>>>>> 0a8f7e7093af1ad9c6c3ed83b4e9a7ae85d18554
+NeuralNetwork::NeuralNetwork(int n2,int c,double alpha){
+    C=c;N2=n2;Alpha=alpha;
     AP=new int[N2];
     APNew=new int[N2];
     std::vector<std::vector<int>> Con(C, std::vector<int>(2)); 
@@ -21,10 +17,6 @@ NeuralNetwork::NeuralNetwork(int n2,int c){
     for (int ix = 0 ; ix < N2 ; ix++){
         Connection_per_neuron[ix] = new int [connection_count[ix]];
     }
-<<<<<<< HEAD
-
-
-=======
 }
 NeuralNetwork::~NeuralNetwork(void){
 
@@ -125,11 +117,53 @@ NeuralNetwork::Estado NeuralNetwork::Get_estado(int ix)
     Estado S;
     if(AP[ix]==0) S=reposo;
     else if(1<=AP[ix] && AP[ix]<=4)S=activado;
-    else if(1<=AP[ix] && AP[ix]<=4)S=activado;
     else if(AP[ix]==5)S=hyperpolarizado;
-    else if(6<=AP[ix] && AP[ix]<=10)S=activado;
->>>>>>> 0a8f7e7093af1ad9c6c3ed83b4e9a7ae85d18554
+    else if(6<=AP[ix] && AP[ix]<=10)S=refractario;
+    return S;
+}
 
+double NeuralNetwork::Consulta(int neu){
 
+    Estado Sconexion, Svecino;
+    /* contador para saber cuantos vecinos son 
+    Ce (neuronas excitatoriasactivas) ,
+    cuantos son Ci (neuranas inhibitoriasactivas) y cuantos Ch
+    hiperpolarizado
+    */
+    double Ca,Ce,Ci,Ch; 
+    Ca=Ce=Ci=Ch=0.0;
 
+    for (int  conex = 0;conex< connection_count[neu]; conex++)
+    {
+        Sconexion=Get_estado(Connection_per_neuron[neu][conex]);
+        if (Sconexion==activado)
+        {
+            if (IE[conex]==true){Ci++;}//se puregunta que tipo de neurona es ya SABIENDO SI ESTA activada 
+            else {Ce++;}
+        }
+        else if (Sconexion==hyperpolarizado){Ch++;}       
+    }
+
+    for (int vecina = 1; vecina <=2 ; vecina++)
+    {
+        // influencia de las neruanas vecinas proximas 
+        int vecina_dera =(neu+vecina)%2;
+        int vecina_izqui=(neu+N2-vecina)%2;
+        Svecino=Get_estado(Connection_per_neuron[neu][vecina_dera]);
+        if (Svecino==activado)
+        {
+            if (IE[vecina_dera]==true){Ci++;}//se puregunta que tipo de neurona es ya SABIENDO SI ESTA activada 
+            else {Ce++;}
+        }
+        else if (Sconexion==hyperpolarizado){Ch++;} 
+        Svecino=Get_estado(Connection_per_neuron[neu][vecina_izqui]);
+        if (Svecino==activado)
+        {
+            if (IE[vecina_izqui]==true){Ci++;}//se puregunta que tipo de neurona es ya SABIENDO SI ESTA activada 
+            else {Ce++;}
+        }
+        else if (Sconexion==hyperpolarizado){Ch++;}   
+    }
+    Ca=Ce-Ci-Alpha*Ch;// regla de activacion
+    return Ca;
 }
