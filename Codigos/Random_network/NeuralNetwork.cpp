@@ -1,7 +1,7 @@
 #include "NeuralNetwork.hpp"
 
-NeuralNetwork::NeuralNetwork(int n2,int c,double alpha){
-    C=c;N2=n2;Alpha=alpha;
+NeuralNetwork::NeuralNetwork(int n2,int c,double alpha,double trest,double trelative){
+    C=c;N2=n2;Alpha=alpha,Trest=trest,Trelative=trelative;
     AP=new int[N2];
     APNew=new int[N2];
     std::vector<std::vector<int>> Con(C, std::vector<int>(2)); 
@@ -18,6 +18,7 @@ NeuralNetwork::NeuralNetwork(int n2,int c,double alpha){
         Connection_per_neuron[ix] = new int [connection_count[ix]];
     }
 }
+
 NeuralNetwork::~NeuralNetwork(void){
 
     delete[]AP;
@@ -28,10 +29,11 @@ NeuralNetwork::~NeuralNetwork(void){
     }
     delete[ ] Connection_per_neuron ;
 }
-void NeuralNetwork::Estado_inicial(Crandom &ran64){
+
+void NeuralNetwork::Estado_inicial(){
 
     double potencial,inhibidora;
-
+    Crandom ran64(1);
     /* genera la matriz que asigna 
     los phi(potencial) estados*/
     for (int ix = 0; ix < N2; ix++)
@@ -112,12 +114,13 @@ void NeuralNetwork::Generador_coneciones(void)
         }   
     }
 }
+
 NeuralNetwork::Estado NeuralNetwork::Get_estado(int ix)
 {
     Estado S;
     if(AP[ix]==0) S=reposo;
     else if(1<=AP[ix] && AP[ix]<=4)S=activado;
-    else if(AP[ix]==5)S=hyperpolarizado;
+    else if(AP[ix]==5)S=hiperpolarizado;
     else if(6<=AP[ix] && AP[ix]<=10)S=refractario;
     return S;
 }
@@ -141,7 +144,7 @@ double NeuralNetwork::Consulta(int neu){
             if (IE[conex]==true){Ci++;}//se puregunta que tipo de neurona es ya SABIENDO SI ESTA activada 
             else {Ce++;}
         }
-        else if (Sconexion==hyperpolarizado){Ch++;}       
+        else if (Sconexion==hiperpolarizado){Ch++;}       
     }
 
     for (int vecina = 1; vecina <=2 ; vecina++)
@@ -155,15 +158,80 @@ double NeuralNetwork::Consulta(int neu){
             if (IE[vecina_dera]==true){Ci++;}//se puregunta que tipo de neurona es ya SABIENDO SI ESTA activada 
             else {Ce++;}
         }
-        else if (Sconexion==hyperpolarizado){Ch++;} 
+        else if (Sconexion==hiperpolarizado){Ch++;} 
         Svecino=Get_estado(Connection_per_neuron[neu][vecina_izqui]);
         if (Svecino==activado)
         {
             if (IE[vecina_izqui]==true){Ci++;}//se puregunta que tipo de neurona es ya SABIENDO SI ESTA activada 
             else {Ce++;}
         }
-        else if (Sconexion==hyperpolarizado){Ch++;}   
+        else if (Sconexion==hiperpolarizado){Ch++;}   
     }
     Ca=Ce-Ci-Alpha*Ch;// regla de activacion
     return Ca;
 }
+
+double NeuralNetwork::Potencial(int ix)
+{
+    double pote=0;
+
+    Estado estado= Get_estado(ix);
+    if (estado==reposo){pote=-70;}
+    else if (estado==activado){pote=40;}
+    else if (estado==hiperpolarizado){pote=-90;}
+    else if (estado==refractario){pote=-75;}
+    return pote; //se puede hacer que el activado tenga diferentes niveles de 
+}
+
+double NeuralNetwork::Serie_temportal()
+{
+    double y_t=0;
+    int butter_order=1;
+
+    for (int ix = 0; ix < N2; ix++)
+    {
+        y_t+=Potencial(ix);// suma todos los potenciales        
+    }
+    return y_t;
+}
+
+double NeuralNetwork::Activas()
+{
+    Estado estado;
+    double Ca=0;
+    for (int ix = 0; ix< N2; ix++)
+    {
+        estado=Get_estado(ix);
+        if (estado==activado){Ca++;}     
+    }
+    return Ca;
+}
+
+void NeuralNetwork::evolucion()
+{
+
+    Estado estado;
+    double Ct=0;
+    int *aux;// para intercambiar matrices
+    for (int  ix = 0; ix < N2; ix++)
+    {
+        estado=Get_estado(ix);
+        if (estado==reposo)
+        {
+            Ct=Consulta(ix);
+            if (Ct>=Trest)
+            {APNew[ix]=1;}// imprinme la intencidad en la matriz para ver la evolucion 
+            else APNew[ix]=0;
+        }
+        else if (estado== activado || estado==hiperpolarizado){APNew[ix]==AP[ix]+1;}
+        else if (estado==refractario)
+        {
+            Ct=Consulta(ix);
+            if (Ct<Trelative)
+            {APNew[ix]=(AP[ix]+1)%11;}
+            else if (Ct>=Trelative){APNew[ix]=1;}
+        }
+    }
+    aux=AP; AP=APNew;APNew=aux;
+}
+
