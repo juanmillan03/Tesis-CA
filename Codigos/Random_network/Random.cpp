@@ -17,7 +17,20 @@ const double Alpha= 0.1; // hyperpolarization coefficient
 
 
 const double factor_cell_hini=0.5;// idea de TDAH
-NeuralNetwork neurona(N2,C,Alpha);
+
+int main(void)
+{
+    NeuralNetwork Red(N2,C,Alpha,Trest,Trelative);
+    int t=0,tmax=1000;
+    Red.Estado_inicial();
+    for(t=0;t<tmax;t++)
+    {
+        Red.evolucion();
+        if(t>30){std::cout<<Red.Serie_temportal()<<std::endl;}
+    }
+    return 0;
+}
+
 
 
 
