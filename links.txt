@@ -1,5 +1,8 @@
 https://medlineplus.gov/spanish/ency/article/003931.htm
 
+https://neuroscenter.com/neurofeedback/ondas-cerebrales/
+
+https://github.com/ruohoruotsi/Butterworth-Filter-Design
 
 Datos:
 Aquí, pPNumero es un puntero doble que almacena la dirección de pNumero.
