@@ -8,7 +8,7 @@ class Crandom{
 public:
   Crandom(unsigned long long j);
   unsigned long long int64();
-  double r() {return 5.42101086242752217E-20 * int64();}
+  double r(){return 5.42101086242752217E-20 * int64();}
   unsigned int int32(){return (unsigned int) int64();};
   double exponencial(float tau);
   double gauss(float mu,float sigma);
@@ -19,6 +19,10 @@ Crandom::Crandom(unsigned long long j){
     v = u; int64();
     w = v; int64();
   }
+double Crandom::r() {
+    // Implementation of the function
+    return 5.42101086242752217E-20 * int64();
+}
 unsigned long long Crandom::int64() {
     u = u * 2862933555777941757LL + 7046029254386353087LL;
     v ^= v >> 17; v ^= v << 31; v ^= v >> 8;
