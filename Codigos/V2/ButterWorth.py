@@ -90,6 +90,6 @@ if __name__ == "__main__":
 
 
     plt.tight_layout() # Ajusta el layout para que las subgráficas no se solapen
-    plt.savefig(f"pdfs/{L}-{Q}-{Trest}-{Treltive}.pdf")
+    plt.savefig(f"pdfs/{L}-{Q}-{Trest}-{Treltive}.png")
     plt.show()
 

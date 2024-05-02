@@ -17,7 +17,7 @@ void NeuralNetwork::Inicio(){
     double potencial, Inhibidora;
     std::mt19937 gen(1); // Mersenne Twister 19937
     std::uniform_real_distribution<> pot(0,1);
-    std::uniform_int_distribution<> inh(0,1);
+    std::uniform_real_distribution<> inh(0,1);
     for (int ix = 0; ix < L2; ix++)
     {
         double potencial =pot(gen);
@@ -36,8 +36,8 @@ void NeuralNetwork::Inicio(){
     for (int ix = 0; ix < L2; ix++)
     {
         double Inhibidora =inh(gen);
-        if(Inhibidora==1)IE[ix]=true;
-        else IE[ix]=false;
+        if(Inhibidora<0.5)IE[ix]=true;
+        else IE[ix]=false;// cambio
     }
 }
 NeuralNetwork::Estado NeuralNetwork::Cual_Estado(int ix){
