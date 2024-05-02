@@ -32,3 +32,18 @@ void Random(std::vector<std::vector<int>> & matrix,int L, int Q){
         else matrix[neurona][conexion]=1;
     }
 }
+void Random_V2(std::vector<std::vector<int>> & matrix,int L, int Q){
+    std::random_device rd;
+    std::mt19937 gen(1); // Mersenne Twister 19937
+    std::uniform_int_distribution<> dis(0,(L*L)-1);
+    for (int Neu = 0; Neu<Q*Q; Neu++)
+    {
+        int neurona=dis(gen),conexion=dis(gen);
+        if (neurona==conexion || matrix[neurona][conexion]==1)Neu=Neu-1;
+        else 
+        {
+            matrix[neurona][conexion]=1;
+            matrix[conexion][neurona]=1;
+        }
+    }
+}

@@ -30,7 +30,8 @@ int main(int argc, char* argv[]) {
     double alpha=integers[4];// 0.1
     double tmax=integers[5];//1000
     std::vector<std::vector<int>> matrix= Conecciones(L);
-    Random(matrix,L,Q);// problema 
+    // Random(matrix,L,Q);// problema
+    Random_V2(matrix,L,Q);
     NeuralNetwork Red(L,matrix,Trest,Trelative,alpha);
     Red.Inicio();
 
@@ -39,13 +40,28 @@ int main(int argc, char* argv[]) {
         std::cout<<Red.Paso_temporal().first<<" "<<Red.Paso_temporal().second<<std::endl;
         Red.Evolucion();
     }
-    
+
+
+    // std::vector<double> Conecciones(L*L);
+    // int unos=0;
     // for (int i = 0; i < L*L; i++) {
+    //     Conecciones[i]=0;
     //     for (int j = 0; j < L*L; j++) {
     //         std::cout << matrix[i][j] << " ";
+    //         if(matrix[i][j]==1)unos++;
+    //         if(matrix[i][j]==1)Conecciones[i]++;
     //     }
     //     std::cout << std::endl;
     // }
+    // double promedio=0;
+    // for (int i = 0; i < L*L; i++)
+    // {
+    //    promedio=promedio+Conecciones[i]/(L*L); 
+    // }
+    
+    // std::cout<<"conexiones por neurna="<<promedio<< std::endl;
+    // std::cout<<"conexiones/posibles conexiones= "<<(unos)/(double)(L*L*(L*L-1))*100<< std::endl;
+    
     return 0;
 }
 
