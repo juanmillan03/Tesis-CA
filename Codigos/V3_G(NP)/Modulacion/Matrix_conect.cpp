@@ -1,6 +1,6 @@
 #include "Matrix_conect.hpp"
-std::vector<std::vector<int>> Conecciones(int L){
-    std::vector<std::vector<int>> Matix (L*L,std::vector<int>(L*L,0));
+std::vector<std::vector<int>> Regular_1(int L){
+    std::vector<std::vector<int>> Matrix (L*L,std::vector<int>(L*L,0));
     for (int i = 0; i<L; i++)
     {   
         for (int j = 0; j < L; j++)
@@ -10,15 +10,18 @@ std::vector<std::vector<int>> Conecciones(int L){
             if (id==0)id=L;
             if (jd+1==L)jd=-1;
             if (ji==0)ji=L;
-            Matix[i*L+j][i*L+jd+1]=1;// derecha
-            Matix[i*L+j][i*L+ji-1]=1;// izquieda
-            Matix[i*L+j][(ia+1)*L+j]=1;// arriba 
-            Matix[i*L+j][(id-1)*L+j]=1;// Abajo         
+            Matrix[i*L+j][i*L+jd+1]=1;// derecha
+            Matrix[i*L+j][i*L+ji-1]=1;// izquieda
+            Matrix[i*L+j][(ia+1)*L+j]=1;// arriba 
+            Matrix[i*L+j][(id-1)*L+j]=1;// Abajo         
         }
     }
-    return Matix;
+    return Matrix;
 }
-void Random_uni(std::vector<std::vector<int>> & matrix,int L, double P){
+
+
+std::vector<std::vector<int>> small_word_uni(int L, double P){
+    std::vector<std::vector<int>> matrix= Regular_1(L);
     std::random_device rd;
     std::mt19937 gen(1); // Mersenne Twister 19937
     std::uniform_real_distribution <>dis(0,1);
@@ -32,8 +35,10 @@ void Random_uni(std::vector<std::vector<int>> & matrix,int L, double P){
             }
         }
     }
+    return matrix;
 }
-void Random_Bi(std::vector<std::vector<int>> & matrix,int L, double P){
+std::vector<std::vector<int>> small_word_Bi(int L, double P){
+    std::vector<std::vector<int>> matrix= Regular_1(L);
     std::random_device rd;
     std::mt19937 gen(1); // Mersenne Twister 19937
     std::uniform_real_distribution <>dis(0.0,1.0);
@@ -48,4 +53,42 @@ void Random_Bi(std::vector<std::vector<int>> & matrix,int L, double P){
             }
         }
     }
+    return matrix;
 }
+std::vector<std::vector<int>> Random_bi(int L, double P){
+    std::vector<std::vector<int>> matrix (L*L,std::vector<int>(L*L,0));
+    std::random_device rd;
+    std::mt19937 gen(1); // Mersenne Twister 19937
+    std::uniform_real_distribution <>dis(0.0,1.0);
+    for (int i = 0; i < L*L; i++)
+    {
+        for (int j = 0; j < L*L; j++)
+        {
+            if (i!=j && matrix[i][j]!=1 && dis(gen)<P)
+            {
+                matrix[i][j]=1;
+                matrix[j][i]=1;
+            }
+        }
+    }
+    return matrix;
+}
+std::vector<std::vector<int>> Random_uni(int L, double P){
+    std::vector<std::vector<int>> matrix (L*L,std::vector<int>(L*L,0));
+    std::random_device rd;
+    std::mt19937 gen(1); // Mersenne Twister 19937
+    std::uniform_real_distribution <>dis(0.0,1.0);
+    for (int i = 0; i < L*L; i++)
+    {
+        for (int j = 0; j < L*L; j++)
+        {
+            if (i!=j && matrix[i][j]!=1 && dis(gen)<P)
+            {
+                matrix[i][j]=1;
+            }
+        }
+    }
+    return matrix;
+}
+
+    

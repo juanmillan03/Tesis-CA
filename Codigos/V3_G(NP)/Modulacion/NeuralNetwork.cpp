@@ -22,6 +22,9 @@ void NeuralNetwork::Inicio( double inhibidoras){
     for (int ix = 0; ix < L2; ix++)
     {
         double potencial =pot(gen);
+        double Inhibidora =inh(gen);
+        if(Inhibidora<inhibidoras)IE[ix]=true;// inhibidiora 
+        else IE[ix]=false;
         if (potencial<0.2){AP[ix]=0;}
         else if (potencial>=0.2 && potencial<0.3){AP[ix]=1;}
         else if (potencial>=0.3 && potencial<0.4){AP[ix]=2;}
@@ -34,12 +37,6 @@ void NeuralNetwork::Inicio( double inhibidoras){
         else if (potencial>=0.86 && potencial<0.93){AP[ix]=9;}
         else if (potencial>=0.93){AP[ix]=10;}  
     } 
-    for (int ix = 0; ix < L2; ix++)
-    {
-        double Inhibidora =inh(gen);
-        if(Inhibidora<inhibidoras)IE[ix]=true;
-        else IE[ix]=false;// cambio
-    }
 }
 NeuralNetwork::Estado NeuralNetwork::Cual_Estado(int ix){
     Estado S;
@@ -47,7 +44,7 @@ NeuralNetwork::Estado NeuralNetwork::Cual_Estado(int ix){
     else if(1<=AP[ix] && AP[ix]<=4)S=Activado;
     else if(AP[ix]==5)S=hyperpolarizado;
     else if(6<=AP[ix] && AP[ix]<=10)S=refractario;
-    return S;
+    return S;   
 }
 double NeuralNetwork::Reglas(int ix){
     Estado Sconexion, Svecino;
@@ -65,11 +62,10 @@ double NeuralNetwork::Reglas(int ix){
         if (matrix[ix][i]==1)
         {
             Sconexion=Cual_Estado(i);
-            if (Sconexion==Activado){
-                if (IE[i]==true)Ci++;//se puregunta que tipo de neurona es ya SABIENDO SI ESTA activada 
-                else Ce++;
-            }
-            else if(Sconexion==hyperpolarizado)Ch++;
+            if (IE[i]==true)Ci++;//se puregunta que tipo de neurona 
+            else Ce++;
+     
+            if(Sconexion==hyperpolarizado)Ch++;
         }
     }
     Ca=Ce-Ci-Alpha*Ch;// regla de activacion
@@ -80,7 +76,24 @@ double NeuralNetwork::Potencial(int ix){
     double potencial =0.0;
     Estado St= Cual_Estado(ix);
     if (St==Reposo){potencial=-70;}
-    else if (St==Activado){potencial=40;}
+    else if (St==Activado)
+    {
+        switch (AP[ix])
+        {
+        case 1:
+            potencial=15;
+            break;
+        case 2:
+            potencial=30;
+            break;
+        case 3:
+            potencial=30;
+            break;
+        case 4:
+            potencial=15;
+            break;
+        }    
+    }
     else if (St==hyperpolarizado){potencial=-90;}
     else if (St==refractario){potencial=-75;}
     return potencial;
@@ -101,20 +114,20 @@ void NeuralNetwork::Evolucion(){
 
     Estado St;
     double Ct=0;
-    std::vector<int> Aux(L2);
+    std::vector<int> Aux(L2,0);
     for (int ix = 0; ix < L2; ix++)
     {
         St=Cual_Estado(ix);
         if (St==Reposo)
         {
             if (Reglas(ix)>=Trest)Aux[ix]=AP[ix]+1;
-            else Aux[ix]=AP[ix]; 
+            else Aux[ix]=0; 
         }
-        else if (St==Activado || St==hyperpolarizado)
+        else if (St==Activado||St==hyperpolarizado)
         {
             Aux[ix]=AP[ix]+1;
         }
-        else
+        else if(St==refractario)
         {
             if(Reglas(ix)<Trelative)Aux[ix]=AP[ix];
             else

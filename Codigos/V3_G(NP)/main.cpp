@@ -33,8 +33,9 @@ int main(int argc, char* argv[]) {
     double Trelative=integers[4];// 1   
     double alpha=integers[5];// 0.1
     double tmax=integers[6];//1000
-    std::vector<std::vector<int>> matrix= Conecciones(L);
-    Random_Bi(matrix,L,P);// problema
+    
+    std::vector<std::vector<int>> matrix= Random_bi(L,P);//
+
     NeuralNetwork Red(L,matrix,Trest,Trelative,alpha);
     Red.Inicio(inhibidoras);
     std::vector<double> Conecciones(L*L);
@@ -49,6 +50,7 @@ int main(int argc, char* argv[]) {
         outfile<< std::endl;
     }
     outfile.close();
+
     for (int t = 0; t < tmax; t++)
     {
         std::cout<<Red.Paso_temporal().first<<" "<<Red.Paso_temporal().second<<std::endl;
