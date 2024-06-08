@@ -17,7 +17,7 @@ class NeuralNetwork
     public:
         NeuralNetwork(int L,std::vector<std::vector<int>> Matrix,double trest
         ,double trelative, double alpha);
-        void Inicio(double inhibidoras);
+        void Inicio();
         enum Estado{Reposo,Activado,hyperpolarizado,refractario};
         Estado Cual_Estado(int ix);
         double Reglas(int ix);

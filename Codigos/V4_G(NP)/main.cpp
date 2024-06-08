@@ -29,25 +29,17 @@ int main(int argc, char* argv[]) {
     int L=integers[0]; // longuitud de la matriz N=L*L 40
     double P=integers[1]; // probailidad de conexion 0.1
     double inhibidoras=integers[2]; // 0.4
-
     double Trest=integers[3];//0
     double Trelative=integers[4];// 1   
-    
     double alpha=integers[5];// 0.1
     double tmax=integers[6];//1000
     
-    std::vector<std::vector<int>> matrix= Random_bi(L,P);
-
+    std::vector<std::vector<int>> matrix= Random_bi(L,P,inhibidoras);
     NeuralNetwork Red(L,matrix,Trest,Trelative,alpha);
-    Red.Inicio(inhibidoras);
-    std::vector<double> Conecciones(L*L);
-    int unos=0;
+    Red.Inicio();
     for (int i = 0; i < L*L; i++) {
-        Conecciones[i]=0;
         for (int j = 0; j < L*L; j++) {
             outfile << matrix[i][j] << " ";
-            if(matrix[i][j]==1)unos++;
-            if(matrix[i][j]==1)Conecciones[i]++;
         }
         outfile<< std::endl;
     }
