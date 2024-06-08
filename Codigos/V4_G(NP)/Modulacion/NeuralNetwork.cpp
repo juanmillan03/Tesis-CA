@@ -13,18 +13,14 @@ NeuralNetwork::NeuralNetwork(int L, std::vector<std::vector<int>> Matrix, double
     IE= std::vector<bool>(L2);
 }
 
-void NeuralNetwork::Inicio( double inhibidoras){
+void NeuralNetwork::Inicio(){
 
-    double potencial, Inhibidora;
+    double potencial;
     std::mt19937 gen(1); // Mersenne Twister 19937
     std::uniform_real_distribution<> pot(0.0,1.0);
-    std::uniform_real_distribution<> inh(0.0,1.0);
     for (int ix = 0; ix < L2; ix++)
     {
         double potencial =pot(gen);
-        double Inhibidora =inh(gen);
-        if(Inhibidora<inhibidoras)IE[ix]=true;// inhibidiora 
-        else IE[ix]=false;
         if (potencial<0.2){AP[ix]=0;}
         else if (potencial>=0.2 && potencial<0.3){AP[ix]=1;}
         else if (potencial>=0.3 && potencial<0.4){AP[ix]=2;}
@@ -59,16 +55,14 @@ double NeuralNetwork::Reglas(int ix){
     // Va a ver que conexiones tiene la neurona ix
     for (int i = 0; i < L2; i++)
     {
-        if (matrix[ix][i]==1)
+        if (matrix[ix][i]==1 || matrix[ix][i]==-1)
         {
             Sconexion=Cual_Estado(i);
             if (Sconexion==Activado)
             {
-                if (IE[i]==true)Ci++;//se puregunta que tipo de neurona 
+                if (matrix[ix][i]==-1)Ci++;//se puregunta que tipo de neurona 
                 else Ce++;
             }
-            // if (IE[i]==true)Ci++;//se puregunta que tipo de neurona 
-            // else Ce++;
             else if (Sconexion==hyperpolarizado)
             {
                 Ch++;
@@ -136,7 +130,7 @@ void NeuralNetwork::Evolucion(){
         }
         else if(St==refractario)
         {
-            if(Reglas(ix)<Trelative)Aux[ix]=AP[ix];
+            if(Reglas(ix)>=Trelative)Aux[ix]=1;
             else
             {
                 if(AP[ix]==10)Aux[ix]=0;
