@@ -1,16 +1,92 @@
-#include "NeuralNetwork.hpp"
+#include<iostream>
+#include<fstream>
+#include<cmath>
+#include<vector>
+#include <random>
+#include "Matrix_conect.hpp"
 
 
-NeuralNetwork::NeuralNetwork(int L, std::vector<std::vector<int>> Matrix, double trest
-,double trelative, double alpha)
+class NeuralNetwork
 {
-    Trest=trest;
-    Trelative=trelative; 
-    Alpha=alpha;
-    L2=L*L;
-    matrix=Matrix;
-    AP=std::vector<int>(L2);
-    IE= std::vector<bool>(L2);
+    private:
+        int L;double P;
+        int L2;
+        double Trest, Trelative,Alpha,inhibidoras;
+        std::vector<std::vector<int>> matrix;
+        std::vector<int> AP;// potencial de la neurana
+        std::vector<bool> IE;// Tipo de neurona
+        std::random_device rd;
+    
+    public:
+        NeuralNetwork(int L,double P,double inhibidoras, double trest
+        ,double trelative, double alpha, int type_matrix);
+        std::vector<std::vector<int>> Matrix(int type);
+        void Inicio();
+        enum Estado{Reposo,Activado,hyperpolarizado,refractario};
+        Estado Cual_Estado(int ix);
+        double Reglas(int ix);
+        double Potencial(int ix);
+        std::pair<double, double> Paso_temporal();
+        void Evolucion();
+    
+};
+
+
+
+int main(int argc, char* argv[]) {
+
+    int Len=atoi(argv[1]);; // longuitud de la matriz N=L*L 40
+    double P= atof(argv[2]); // probailidad de conexion 0.1
+    double inhibidoras=atof(argv[3]); // 0.4
+    double Trest=atof(argv[4]);//0
+    double Trelative=atof(argv[5]);// 1   
+    double alpha=atof(argv[6]);// 0.1
+    double tmax=atoi(argv[7]);//1000
+    double type_matrix=atoi(argv[8]);
+    
+
+    NeuralNetwork Red(Len,P,inhibidoras,Trest,Trelative,alpha,type_matrix);
+    Red.Inicio();
+    for (int t = 0; t < tmax; t++)
+    {
+        std::cout<<Red.Paso_temporal().first<<" "<<Red.Paso_temporal().second<<std::endl;
+        Red.Evolucion();
+    }
+
+
+    return 0;
+}
+
+
+
+// ---------------- Implementacion-------------------------------
+NeuralNetwork::NeuralNetwork(int L, double P, double inhibidoras, double trest,
+                            double trelative, double alpha, int type_matrix)
+{
+    this->L = L;
+    this->P = P;
+    this->inhibidoras = inhibidoras;
+    this->Trest = trest;
+    this->Trelative = trelative;
+    this->Alpha = alpha;
+    this->L2 = L * L;
+    matrix = Matrix(type_matrix);
+    AP = std::vector<int>(L2);
+    IE = std::vector<bool>(L2);
+}
+
+std::vector<std::vector<int>> NeuralNetwork::Matrix(int type){
+    switch (type)
+        {
+        case 0:
+            return Regular_1(L,inhibidoras);
+        case 1:
+            return small_word_Bi(L,P,inhibidoras);
+        case 2:
+            return Random_bi(L,P,inhibidoras);
+        default:
+            return Regular_1(L,inhibidoras);
+        }
 }
 
 void NeuralNetwork::Inicio(){
@@ -139,3 +215,5 @@ void NeuralNetwork::Evolucion(){
     }
     AP=Aux;
 }
+
+
