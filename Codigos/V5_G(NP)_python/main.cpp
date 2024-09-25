@@ -152,27 +152,27 @@ double NeuralNetwork::Reglas(int ix){
 double NeuralNetwork::Potencial(int ix){
     double potencial =0.0;
     Estado St= Cual_Estado(ix);
-    if (St==Reposo){potencial=-70;}
+    if (St==Reposo){potencial=-0.00070;}
     else if (St==Activado)
     {
         switch (AP[ix])
         {
         case 1:
-            potencial=15;
+            potencial=0.00015;
             break;
         case 2:
-            potencial=30;
+            potencial=0.00030;
             break;
         case 3:
-            potencial=30;
+            potencial=0.00030;
             break;
         case 4:
-            potencial=15;
+            potencial=0.00015;
             break;
         }    
     }
-    else if (St==hyperpolarizado){potencial=-90;}
-    else if (St==refractario){potencial=-75;}
+    else if (St==hyperpolarizado){potencial=-0.00090;}
+    else if (St==refractario){potencial=-0.00075;}
     return potencial;
 }
 std::pair<double, double> NeuralNetwork::Paso_temporal(){
