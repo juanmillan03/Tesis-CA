@@ -22,7 +22,8 @@ std::vector<std::vector<int>> Regular_1(int L, double Inh){
             I=inh(gen);if (I<Inh)I=0;else I=1;
             Matrix[i*L+j][(ia+1)*L+j]=-1*(2*I-1);// arriba 
             I=inh(gen);if (I<Inh)I=0;else I=1;
-            Matrix[i*L+j][(id-1)*L+j]=-1*(2*I-1);// Abajo         
+            Matrix[i*L+j][(id-1)*L+j]=-1*(2*I-1);// Abajo    
+
         }
     }
     return Matrix;
@@ -121,8 +122,7 @@ std::vector<std::vector<int>> Random_bi(int L, double P, double Inh){
         for (int j = 0; j < L*L; j++)
         {
             I=inh(gen);
-            if (I<Inh)I=0;
-            else I=1;
+            if (I<Inh)I=0;else I=1;
             if (i!=j && (matrix[i][j]!=1 || matrix[i][j]!=-1) && dis(gen)<P)
             {
                 matrix[i][j]=-1*(2*I-1);
