@@ -35,16 +35,39 @@ std::vector<std::vector<int>> small_word_uni(int L, double P, double Inh){
     std::random_device rd;
     std::mt19937 gen(1); // Mersenne Twister 19937
     std::uniform_real_distribution <>dis(0,1);
+    std::uniform_int_distribution <>neu(0,L*L-1);
+    int inh_value;
+    int jj;
     for (int i = 0; i<L*L; i++)
     {
         for (int j = 0; j<L*L; j++)
         {
-            if ((i!=j && (matrix[i][j]!=1 || matrix[i][j]!=-1)) && dis(gen)<P)
-            {
-                matrix[i][j]=1;
+            if ((i!=j && (matrix[i][j]==1 || matrix[i][j]==-1)) && dis(gen)<P)
+            {   
+                inh_value=matrix[i][j];
+                matrix[i][j]=0;
+                jj=neu(gen);
+                matrix[i][jj]=inh_value+3;
             }
         }
     }
+    for (int i = 0; i < L*L; i++)
+    {
+        for (int j = 0; j < L*L; j++)
+        {
+            if (matrix[i][j]==4)
+            {
+                matrix[i][j]=1;
+                matrix[j][i]=1;
+            }
+            if (matrix[i][j]==2)
+            {
+                matrix[i][j]=-1;
+                matrix[j][i]=-1;
+            }
+        }
+    }
+    
     return matrix;
 }
 std::vector<std::vector<int>> small_word_Bi(int L, double P, double Inh){

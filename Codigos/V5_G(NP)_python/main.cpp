@@ -81,9 +81,14 @@ std::vector<std::vector<int>> NeuralNetwork::Matrix(int type){
         case 0:
             return Regular_1(L,inhibidoras);
         case 1:
-            return small_word_Bi(L,P,inhibidoras);
+            return small_word_uni(L,P,inhibidoras);
         case 2:
+            return small_word_Bi(L,P,inhibidoras);
+        case 3:
             return Random_bi(L,P,inhibidoras);
+        case 4:
+            return Random_uni(L,P,inhibidoras);
+    
         default:
             return Regular_1(L,inhibidoras);
         }
