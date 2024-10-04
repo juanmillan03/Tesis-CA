@@ -3,6 +3,7 @@
 #include<cmath>
 #include<vector>
 #include <random>
+#include <omp.h>
 #include "Matrix_conect.hpp"
 
 
@@ -34,7 +35,7 @@ class NeuralNetwork
 
 
 int main(int argc, char* argv[]) {
-
+    omp_set_num_threads(2);
     int Len=atoi(argv[1]);; // longuitud de la matriz N=L*L 40
     double P= atof(argv[2]); // probailidad de conexion 0.1
     double inhibidoras=atof(argv[3]); // 0.4
@@ -180,45 +181,43 @@ double NeuralNetwork::Potencial(int ix){
     else if (St==refractario){potencial=-0.0075;}
     return potencial;
 }
-std::pair<double, double> NeuralNetwork::Paso_temporal(){
-    double potencial_t=0.0,Ca=0;
+std::pair<double, double> NeuralNetwork::Paso_temporal() {
+    double potencial_t = 0.0, Ca = 0;
     Estado Sa;
-    for (int ix = 0; ix < L2; ix++)
-    {
-        potencial_t+=Potencial(ix);
+    
+    #pragma omp parallel for reduction(+:potencial_t, Ca)
+    for (int ix = 0; ix < L2; ix++) {
+        potencial_t += Potencial(ix);
         Sa = Cual_Estado(ix);
-        if (Sa==Activado)Ca++;
+        if (Sa == Activado) Ca++;
     }
-    return std::make_pair(Ca,potencial_t);
+    
+    return std::make_pair(Ca, potencial_t);
 }
 
-void NeuralNetwork::Evolucion(){
 
+void NeuralNetwork::Evolucion(){
     Estado St;
-    std::vector<int> Aux(L2,0);
-    for (int ix = 0; ix < L2; ix++)
-    {
-        St=Cual_Estado(ix);
-        if (St==Reposo)
-        {
-            if (Reglas(ix)>=Trest)Aux[ix]=AP[ix]+1;
-            else Aux[ix]=0; 
-        }
-        else if (St==Activado||St==hyperpolarizado)
-        {
-            Aux[ix]=AP[ix]+1;
-        }
-        else if(St==refractario)
-        {
-            if(Reglas(ix)>=Trelative)Aux[ix]=1;
-            else
-            {
-                if(AP[ix]==10)Aux[ix]=0;
-                else Aux[ix]=AP[ix]+1;
+    std::vector<int> Aux(L2, 0);
+    
+    #pragma omp parallel for
+    for (int ix = 0; ix < L2; ix++) {
+        St = Cual_Estado(ix);
+        if (St == Reposo) {
+            if (Reglas(ix) >= Trest) Aux[ix] = AP[ix] + 1;
+            else Aux[ix] = 0; 
+        } else if (St == Activado || St == hyperpolarizado) {
+            Aux[ix] = AP[ix] + 1;
+        } else if (St == refractario) {
+            if (Reglas(ix) >= Trelative) Aux[ix] = 1;
+            else {
+                if (AP[ix] == 10) Aux[ix] = 0;
+                else Aux[ix] = AP[ix] + 1;
             }
         }
     }
-    AP=Aux;
+    
+    AP = Aux;
 }
 
 

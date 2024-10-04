@@ -58,12 +58,10 @@ std::vector<std::vector<int>> small_word_uni(int L, double P, double Inh){
             if (matrix[i][j]==4)
             {
                 matrix[i][j]=1;
-                matrix[j][i]=1;
             }
             if (matrix[i][j]==2)
             {
                 matrix[i][j]=-1;
-                matrix[j][i]=-1;
             }
         }
     }
