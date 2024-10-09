@@ -36,7 +36,7 @@ std::vector<std::vector<int>> small_word_uni(int L, double P, double Inh){
     std::mt19937 gen(1); // Mersenne Twister 19937
     std::uniform_real_distribution <>dis(0,1);
     std::uniform_int_distribution <>neu(0,L*L-1);
-    int inh_value;
+    int ii_value;
     int jj;
     for (int i = 0; i<L*L; i++)
     {
@@ -44,10 +44,10 @@ std::vector<std::vector<int>> small_word_uni(int L, double P, double Inh){
         {
             if ((i!=j && (matrix[i][j]==1 || matrix[i][j]==-1)) && dis(gen)<P)
             {   
-                inh_value=matrix[i][j];
+                ii_value=matrix[i][j];
                 matrix[i][j]=0;
                 jj=neu(gen);
-                matrix[i][jj]=inh_value+3;
+                matrix[i][jj]=ii_value+3;
             }
         }
     }
@@ -55,14 +55,8 @@ std::vector<std::vector<int>> small_word_uni(int L, double P, double Inh){
     {
         for (int j = 0; j < L*L; j++)
         {
-            if (matrix[i][j]==4)
-            {
-                matrix[i][j]=1;
-            }
-            if (matrix[i][j]==2)
-            {
-                matrix[i][j]=-1;
-            }
+            if (matrix[i][j]==4) matrix[i][j]=1;
+            else if (matrix[i][j]==2)matrix[i][j]=-1;
         }
     }
     
@@ -74,42 +68,21 @@ std::vector<std::vector<int>> small_word_Bi(int L, double P, double Inh){
     std::mt19937 gen(1); // Mersenne Twister 19937
     std::uniform_real_distribution <>dis(0.0,1.0);
     std::uniform_int_distribution <>neu(0,L*L-1);
+    int ii_value,jj_value;
     int jj;
     for (int i = 0; i < L*L; i++)
     {
         for (int j = 0; j < L*L; j++)
         {
-            if (matrix[i][j]==1 && dis(gen)<P)
+            if ((matrix[i][j]==1 || matrix[i][j]==-1) && dis(gen)<P)
             {
+                ii_value=matrix[i][j];
+                jj_value=matrix[j][i];
                 matrix[i][j]=0;
                 matrix[j][i]=0;
                 jj=neu(gen);
-                if (jj==i || jj==j)
-                {
-                    jj=neu(gen);
-                    matrix[jj][i]=2;
-                    matrix[i][jj]=2;
-                }
-                else{
-                    matrix[jj][i]=2;
-                    matrix[i][jj]=2;
-                }
-            }
-            if (matrix[i][j]==-1 && dis(gen)<P)
-            {
-                matrix[i][j]=0;
-                matrix[j][i]=0;
-                jj=neu(gen);
-                if (jj==i || jj==j)
-                {
-                    jj=neu(gen);
-                    matrix[jj][i]=-2;
-                    matrix[i][jj]=-2;
-                }
-                else{
-                    matrix[jj][i]=-2;
-                    matrix[i][jj]=-2;
-                }
+                matrix[jj][i]=3+ii_value;
+                matrix[i][jj]=3+jj_value;
             }
         }
     }
@@ -117,16 +90,8 @@ std::vector<std::vector<int>> small_word_Bi(int L, double P, double Inh){
     {
         for (int j = 0; j < L*L; j++)
         {
-            if (matrix[i][j]==2)
-            {
-                matrix[i][j]=1;
-                matrix[j][i]=1;
-            }
-            if (matrix[i][j]==-2)
-            {
-                matrix[i][j]=-1;
-                matrix[j][i]=-1;
-            }
+            if (matrix[i][j]==2)matrix[i][j]=-1;
+            else if(matrix[i][j]==4)matrix[i][j]=1; 
         }
     }
     return matrix;
@@ -144,7 +109,7 @@ std::vector<std::vector<int>> Random_bi(int L, double P, double Inh){
         {
             I=inh(gen);
             if (I<Inh)I=0;else I=1;
-            if (i!=j && (matrix[i][j]!=1 || matrix[i][j]!=-1) && dis(gen)<P)
+            if ((matrix[i][j]!=1 || matrix[i][j]!=-1) && dis(gen)<P)
             {
                 matrix[i][j]=-1*(2*I-1);
                 matrix[j][i]=-1*(2*I-1);
@@ -165,9 +130,8 @@ std::vector<std::vector<int>> Random_uni(int L, double P, double Inh){
         for (int j = 0; j < L*L; j++)
         {
             I=inh(gen);
-            if (I<Inh)I=0;
-            else I=1;
-            if (i!=j && (matrix[i][j]!=1 || matrix[i][j]!=-1) && dis(gen)<P)
+            if (I<Inh)I=0;else I=1;
+            if ((matrix[i][j]!=1 || matrix[i][j]!=-1) && dis(gen)<P)
             {
                 matrix[i][j]=-1*(2*I-1);
             }
