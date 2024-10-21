@@ -126,29 +126,18 @@ NeuralNetwork::Estado NeuralNetwork::Cual_Estado(int ix){
 }
 double NeuralNetwork::Reglas(int ix){
     Estado Sconexion, Svecino;
-    /* contador para saber cuantos vecinos son 
-    Ce (neuronas excitatoriasactivas) ,
-    cuantos son Ci (neuranas inhibitoriasactivas) y cuantos Ch
-    hiperpolarizado
-    */
     double Ca,Ce,Ci,Ch; 
     Ca=Ce=Ci=Ch=0.0;
 
-    // Va a ver que conexiones tiene la neurona ix
     for (int i = 0; i < L2; i++)
     {
         if (matrix[ix][i]==1 || matrix[ix][i]==-1)
         {
             Sconexion=Cual_Estado(i);
-            if (Sconexion==Activado)
-            {
-                if (matrix[ix][i]==-1)Ci++;//se puregunta que tipo de neurona 
-                else Ce++;
-            }
-            else if (Sconexion==hyperpolarizado)
-            {
-                Ch++;
-            }
+            if (matrix[ix][i]==-1)Ci++;//se puregunta que tipo de neurona 
+            else Ce++;
+            
+            if (Sconexion==hyperpolarizado)Ch++;
         }
     }
     Ca=Ce-Ci-Alpha*Ch;// regla de activacion
