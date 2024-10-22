@@ -134,10 +134,15 @@ double NeuralNetwork::Reglas(int ix){
         if (matrix[ix][i]==1 || matrix[ix][i]==-1)
         {
             Sconexion=Cual_Estado(i);
-            if (matrix[ix][i]==-1)Ci++;//se puregunta que tipo de neurona 
-            else Ce++;
-            
-            if (Sconexion==hyperpolarizado)Ch++;
+            if (Sconexion==Activado )
+            {
+                if (matrix[ix][i]==-1)Ci++;//se puregunta que tipo de neurona 
+                else Ce++;
+            }
+            else if (Sconexion==hyperpolarizado)
+            {
+                Ch++;
+            }
         }
     }
     Ca=Ce-Ci-Alpha*Ch;// regla de activacion
