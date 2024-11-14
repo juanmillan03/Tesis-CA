@@ -128,7 +128,6 @@ double NeuralNetwork::Reglas(int ix){
     Estado Sconexion, Svecino;
     double Ca,Ce,Ci,Ch; 
     Ca=Ce=Ci=Ch=0.0;
-
     for (int i = 0; i < L2; i++)
     {
         if (matrix[ix][i]==1 || matrix[ix][i]==-1)
@@ -200,7 +199,8 @@ void NeuralNetwork::Evolucion(){
         if (St == Reposo) {
             if (Reglas(ix) >= Trest) Aux[ix] = AP[ix] + 1;
             else Aux[ix] = 0; 
-        } else if (St == Activado || St == hyperpolarizado) {
+        } 
+        else if (St == Activado || St == hyperpolarizado) {
             Aux[ix] = AP[ix] + 1;
         } else if (St == refractario) {
             if (Reglas(ix) >= Trelative) Aux[ix] = 1;
