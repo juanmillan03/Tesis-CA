@@ -27,7 +27,7 @@ class NeuralNetwork
         Estado Cual_Estado(int ix);
         double Reglas(int ix);
         double Potencial(int ix);
-        std::pair<double, double> Paso_temporal();
+        double Paso_temporal();
         void Evolucion();
     
 };
@@ -35,7 +35,6 @@ class NeuralNetwork
 
 
 int main(int argc, char* argv[]) {
-    omp_set_num_threads(2);
     int Len=atoi(argv[1]);; // longuitud de la matriz N=L*L 40
     double P= atof(argv[2]); // probailidad de conexion 0.1
     double inhibidoras=atof(argv[3]); // 0.4
@@ -50,7 +49,7 @@ int main(int argc, char* argv[]) {
     Red.Inicio();
     for (int t = 0; t < tmax; t++)
     {
-        std::cout<<Red.Paso_temporal().first<<" "<<Red.Paso_temporal().second<<std::endl;
+        std::cout<<Red.Paso_temporal()<<std::endl;
         Red.Evolucion();
     }
 
@@ -148,69 +147,52 @@ double NeuralNetwork::Reglas(int ix){
     return Ca;
 }
 
-double NeuralNetwork::Potencial(int ix){
-    double potencial =0.0;
-    Estado St= Cual_Estado(ix);
-    if (St==Reposo){potencial=-0.070;}
-    else if (St==Activado)
-    {
-        switch (AP[ix])
-        {
-        case 1:
-            potencial=0.015;
-            break;
-        case 2:
-            potencial=0.030;
-            break;
-        case 3:
-            potencial=0.030;
-            break;
-        case 4:
-            potencial=0.015;
-            break;
-        }    
+double NeuralNetwork::Potencial(int ix) {
+    Estado St = Cual_Estado(ix);
+    double potencial = 0.0;
+    if (St == Reposo) {
+        potencial = -0.070;
+    } else if (St == Activado) {
+        if(AP[ix] == 1)potencial=-0.010;
+        else if(AP[ix] == 2)potencial=0.030;
+        else if(AP[ix] == 3)potencial=-0.030;
+        else if(AP[ix] == 4)potencial=-0.060;
+    } else if (St == hyperpolarizado) {
+        potencial = -0.090;
+    } else if (St == refractario) {
+        potencial = -0.075;
     }
-    else if (St==hyperpolarizado){potencial=-0.090;}
-    else if (St==refractario){potencial=-0.075;}
+
     return potencial;
 }
-std::pair<double, double> NeuralNetwork::Paso_temporal() {
-    double potencial_t = 0.0, Ca = 0;
-    Estado Sa;
-    
-    #pragma omp parallel for reduction(+:potencial_t, Ca)
+double NeuralNetwork::Paso_temporal() {
+    double potencial_t = 0.0;
+    #pragma omp parallel for reduction(+:potencial_t)
     for (int ix = 0; ix < L2; ix++) {
         potencial_t += Potencial(ix);
-        Sa = Cual_Estado(ix);
-        if (Sa == Activado) Ca++;
     }
     
-    return std::make_pair(Ca, potencial_t);
+    return potencial_t;
 }
+
 
 
 void NeuralNetwork::Evolucion(){
     Estado St;
     std::vector<int> Aux(L2, 0);
     
-    #pragma omp parallel for
+    #pragma omp parallel for private(St)
     for (int ix = 0; ix < L2; ix++) {
-        St = Cual_Estado(ix);
+        Estado St = Cual_Estado(ix);
+        double regla_val = Reglas(ix);
         if (St == Reposo) {
-            if (Reglas(ix) >= Trest) Aux[ix] = AP[ix] + 1;
-            else Aux[ix] = 0; 
-        } 
-        else if (St == Activado || St == hyperpolarizado) {
+            Aux[ix] = (regla_val >= Trest) ? AP[ix] + 1 : 0;
+        } else if (St == Activado || St == hyperpolarizado) {
             Aux[ix] = AP[ix] + 1;
         } else if (St == refractario) {
-            if (Reglas(ix) >= Trelative) Aux[ix] = 1;
-            else {
-                if (AP[ix] == 10) Aux[ix] = 0;
-                else Aux[ix] = AP[ix] + 1;
-            }
+            Aux[ix] = (regla_val >= Trelative) ? 1 : ((AP[ix] == 10) ? 0 : AP[ix] + 1);
         }
     }
-    
     AP = Aux;
 }
 
