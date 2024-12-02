@@ -148,20 +148,19 @@ double NeuralNetwork::Reglas(int ix){
 }
 
 double NeuralNetwork::Potencial(int ix) {
-    Estado St = Cual_Estado(ix);
     double potencial = 0.0;
-    if (St == Reposo) {
-        potencial = -0.070;
-    } else if (St == Activado) {
-        if(AP[ix] == 1)potencial=-0.010;
-        else if(AP[ix] == 2)potencial=0.030;
-        else if(AP[ix] == 3)potencial=-0.030;
-        else if(AP[ix] == 4)potencial=-0.060;
-    } else if (St == hyperpolarizado) {
-        potencial = -0.090;
-    } else if (St == refractario) {
-        potencial = -0.075;
-    }
+    if(AP[ix] == 0)potencial=-0.070;
+    else if(AP[ix] == 1)potencial=-0.020;
+    else if(AP[ix] == 2)potencial=0.030;
+    else if(AP[ix] == 3)potencial=0.0;
+    else if(AP[ix] == 4)potencial=-0.040;
+    else if(AP[ix] == 5)potencial=-0.080;
+    else if(AP[ix] == 6)potencial=-0.075;
+    else if(AP[ix] == 7)potencial=-0.072;
+    else if(AP[ix] == 8)potencial=-0.0715;
+    else if(AP[ix] == 9)potencial=-0.0707;
+    else if(AP[ix] == 10)potencial=-0.0705;
+    
 
     return potencial;
 }

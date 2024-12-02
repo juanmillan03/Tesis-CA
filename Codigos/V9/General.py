@@ -15,7 +15,7 @@ order = 4  # Order of the filter
 sampling_rate_equipo= 500 
 b, a = signal.butter(order, [low_cutoff / (0.5 * sampling_rate_equipo), high_cutoff / (0.5 * sampling_rate_equipo)], btype='band')
 fs = 500  # Sampling rate
-sampling_rate = 1666 ### simulacion 
+sampling_rate = 3003 ### simulacion 
 
 def Simulado_EGG(params,Normalizacion):
     L, P, inhibidoras, trest, trelative, alpha, tmax, type_matrix = params
@@ -33,7 +33,7 @@ def Simulado_EGG(params,Normalizacion):
     data_list = [float(line) for line in lines]
 
     # Convertir la lista a un array de NumPy
-    data = np.array(data_list)[50:]  # Ignorar las primeras 50 filas 
+    data = np.array(data_list)[120:]  # Ignorar las primeras 50 filas 
      
     if(Normalizacion=="max_global"):    
         data=data / max(data)
@@ -123,10 +123,10 @@ def Datos_reales(directorio,Normalizacion, global_min, global_max, global_mean, 
         Frequencies[i]=frequencies=np.array(frequencies)
         welch_data = np.array([10 * np.log10(psd[i]) for i in range(len(frequencies))])
         welch_datos[i]=welch_data
-        delta = welch_data[np.logical_and(frequencies >= 0, frequencies <= 3)]
-        theta = welch_data[np.logical_and(frequencies >= 3, frequencies <= 7)]
-        alpha = welch_data[np.logical_and(frequencies >= 7, frequencies <= 14)]
-        beta = welch_data[np.logical_and(frequencies >= 14, frequencies <= 30)]
+        delta = welch_data[np.logical_and(frequencies > 0, frequencies <= 3)]
+        theta = welch_data[np.logical_and(frequencies > 3, frequencies <= 7)]
+        alpha = welch_data[np.logical_and(frequencies > 7, frequencies <= 14)]
+        beta = welch_data[np.logical_and(frequencies > 14, frequencies <= 30)]
         Delta[i]=np.array([delta.mean(),delta.std()])
         Theta[i]=[theta.mean(),theta.std()]
         Alpha[i]=[alpha.mean(),alpha.std()]
@@ -145,13 +145,13 @@ def Datos_reales(directorio,Normalizacion, global_min, global_max, global_mean, 
 
 def objective(trial):
     params = np.zeros(8)
-    params[0] = trial.suggest_int('L',10,100)
+    params[0] = trial.suggest_int('L',10,90)
     params[1] = trial.suggest_float('P', 0.0, Pmax)
     params[2] = trial.suggest_float('Inh', 0.0, 1.0)
     params[3] = trial.suggest_float('Trest',0,10.0)###, step=0.05 difernecia entre datos 
     params[4] = trial.suggest_float('Trelative',params[3],params[3]+10)  
     params[5] = trial.suggest_float('C_h', 0, 1)
-    params[6] = 6716
+    params[6] = 12132
     params[7] = trial.suggest_int('Tipo_red',Tmin,Tmax)
 
         
@@ -161,7 +161,7 @@ def objective(trial):
         trial.report(hi2_stat, step=trial.number)### general
         return hi2_stat
     else:
-        return float('inf')  
+        return float('inf') 
 
 def main():
     # Verificar si se pasaron los comandos necesarios
@@ -222,20 +222,18 @@ def main():
                                 storage=f"sqlite:///Estudios/{Zona}/{study_name}.db", 
                                    load_if_exists=True,
                                 direction="minimize",
-                                pruner= optuna.pruners.MedianPruner(n_startup_trials=5, n_warmup_steps=10, interval_steps=1)
+                                #pruner= optuna.pruners.MedianPruner(n_startup_trials=5, n_warmup_steps=10, interval_steps=1)
                                 
                                 )
-    n_trials = 500  # Total de pruebas
-    sampler_distribution = {"random": 0.2, "tpe": 0.5, "cmaes": 0.3}  # Porcentaje de cada sampler
+    n_trials = 400  # Total de pruebas
+    sampler_distribution = {"random": 0.2, "tpe": 0.8}  # Porcentaje de cada sampler
     # Configuración de los samplers
     random_sampler = optuna.samplers.RandomSampler()
     tpe_sampler = optuna.samplers.TPESampler()
-    cmaes_sampler = optuna.samplers.CmaEsSampler()
 
     # Calcular los límites de los samplers
     n_random = int(sampler_distribution["random"] * n_trials)
     n_tpe = int(sampler_distribution["tpe"] * n_trials)
-    n_cmaes = n_trials - n_random - n_tpe  # Restante
     study.sampler = random_sampler
     study.optimize(objective, n_trials=n_random)
 
@@ -243,9 +241,6 @@ def main():
     study.sampler = tpe_sampler
     study.optimize(objective, n_trials=n_tpe)
 
-    # Tercera etapa: CmaEsSampler
-    study.sampler = cmaes_sampler
-    study.optimize(objective, n_trials=n_cmaes)    
-
+    
 if __name__ == "__main__":
     main()
